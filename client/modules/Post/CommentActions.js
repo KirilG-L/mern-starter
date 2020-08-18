@@ -1,17 +1,29 @@
-import callApi from '../../../../util/apiCaller';
+import callApi from '../../util/apiCaller';
 
 // Export Constants
 export const ADD_COMMENT = 'ADD_COMMENT';
 export const EDIT_COMMENT = 'EDIT_COMMENT';
 export const DELETE_COMMENT = 'DELETE_COMMENT';
-export const GET_COMMENTS = 'GET_COMMENTS';
+export const ADD_COMMENTS = 'ADD_COMMENTS';
+export const EDIT_COMMENT_MODE = 'EDIT_COMMENT_MODE';
+export const CANCEL_EDIT_COMMENT_MODE = 'CANCEL_EDIT_COMMENT_MODE';
 
 // Export Actions
-export function addComment(author, text) {
+export function addComment(comment) {
   return {
     type: ADD_COMMENT,
-    author,
-    text,
+    comment,
+  };
+}
+
+export function addCommentRequest(postId, comment) {
+  return (dispatch) => {
+    return callApi(`posts/${postId}/comments`, 'post', {
+      comment: {
+        author: comment.author,
+        body: comment.body,
+      },
+    }).then(res => dispatch(addComment(res.comment)));
   };
 }
 
@@ -22,43 +34,56 @@ export function deleteComment(cuid) {
   };
 }
 
-export function editComment(cuid, author, text) {
+export function deleteCommentRequest(cuid) {
+  return (dispatch) => {
+    return callApi(`comments/${cuid}`, 'delete').then(() => dispatch(deleteComment(cuid)));
+  };
+}
+
+export function editComment({ cuid, author, body }) {
   return {
     type: EDIT_COMMENT,
     cuid,
     author,
-    text,
+    body,
   };
 }
 
-export function getComments(comments) {
+export function enableEditMode(comment) {
   return {
-    type: GET_COMMENTS,
-    comments,
+    type: EDIT_COMMENT_MODE,
+    comment
   };
 }
 
-export function addCommentRequest(cuid, comment) {
-  return (dispatch) => {
-    return callApi(`posts/${cuid}`, 'post', {
+export function cancelEditMode() {
+  return {
+    type: CANCEL_EDIT_COMMENT_MODE,
+  };
+}
+
+export function editCommentRequest(cuid, comment) {
+  return dispatch => {
+    return callApi(`comments/${cuid}`, 'put', {
       comment: {
-        author: comment.title,
-        text: comment.text,
+        author: comment.author,
+        body: comment.body,
       },
-    }).then(res => dispatch(addComment(res.comment)));
+    }).then(res => dispatch(editComment(res.comment)));
   };
 }
 
-export function deleteCommentRequest(cuid) {
-  return (dispatch) => {
-    return callApi(`comment/${cuid}`, 'delete').then(() => dispatch(deleteComment(cuid)));
+export function addComments(comments) {
+  return {
+    type: ADD_COMMENTS,
+    comments,
   };
 }
 
 export function fetchComments(cuid) {
   return (dispatch) => {
-    return callApi(`/posts/${cuid}/comments`).then(res => {
-      dispatch(getComments(res.comments));
+    return callApi(`posts/${cuid}/comments`).then(res => {
+      dispatch(addComments(res.comments));
     });
   };
 }

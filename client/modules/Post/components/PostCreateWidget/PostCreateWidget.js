@@ -35,7 +35,7 @@ export class PostCreateWidget extends Component {
 PostCreateWidget.propTypes = {
   addPost: PropTypes.func.isRequired,
   showAddPost: PropTypes.bool.isRequired,
-  intl: intlShape.isRequired,
+  intl: intlShape,
 };
 
 export default injectIntl(PostCreateWidget);

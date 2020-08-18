@@ -1,37 +1,43 @@
-import { ADD_COMMENT, DELETE_COMMENT, EDIT_COMMENT, GET_COMMENTS } from './CommentActions';
+import { ADD_COMMENT, DELETE_COMMENT, EDIT_COMMENT, ADD_COMMENTS, EDIT_COMMENT_MODE, CANCEL_EDIT_COMMENT_MODE } from './CommentActions';
 
 // Initial State
 const initialState = {
-  comments: [{
-    cuid: 1,
-    author: 'Mike',
-    text: 'How are you?',
-  }],
+  comments: [],
+  editing: null,
 };
 
 const CommentReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_COMMENT :
       return {
-        comments: [...state.comments, {
-          cuid: state.comments.length > 0 ? state.comments[state.comments.length - 1].cuid + 1 : 1,
-          author: action.author,
-          text: action.text,
-        }],
+        comments: [...state.comments, action.comment],
       };
 
-    case GET_COMMENTS :
+    case ADD_COMMENTS :
       return {
         comments: action.comments,
+      };
+
+    case EDIT_COMMENT_MODE :
+      return {
+        ...state,
+        editing: action.comment,
+      };
+
+    case CANCEL_EDIT_COMMENT_MODE :
+      return {
+        ...state,
+        editing: null,
       };
 
     case EDIT_COMMENT :
       return {
         comments: state.comments.map((comment) => (
           comment.cuid === action.cuid ? {
+            ...comment,
             cuid: action.cuid,
             author: action.author,
-            text: action.text,
+            body: action.body,
           } : comment
         )),
       };
@@ -49,7 +55,7 @@ const CommentReducer = (state = initialState, action) => {
 /* Selectors */
 
 // Get all comments
-export const getComments = state => state.comments.comments;
+export const getCommentsSelector = state => state.comments.comments;
 
 
 // Export Reducer

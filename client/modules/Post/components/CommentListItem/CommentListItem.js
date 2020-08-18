@@ -9,10 +9,22 @@ function CommentListItem(props) {
   const { comment, onDelete } = props;
   return (
     <div className={styles['single-comment']}>
-      <h3 className={styles['comment.id']}>{`# ${comment.cuid}`}</h3>
-      <p className={styles['author-name']}><FormattedMessage id="by" /> {comment.author}</p>
-      <p className={styles['comment-text']}>{comment.text}</p>
-      <p className={styles['delete-btn']}><a href="#" onClick={onDelete}><FormattedMessage id="deleteComment" /></a></p>
+      <p className={styles['author-name']}>
+        <FormattedMessage id="by" /> {comment.author}</p>
+      <p className={styles['comment-text']}>{comment.body}</p>
+      <div className={styles['delete-btn']}>
+        <a
+          className={styles['save-btn']}
+          href="#"
+          onClick={() => props.openEditComment(comment)}
+        >
+          Edit comment
+        </a>
+        <a href="#" onClick={() => onDelete(comment.cuid)}>
+          <FormattedMessage id="deleteComment" />
+        </a>
+      </div>
+
       <hr className={styles.divider} />
     </div>
   );
@@ -20,11 +32,12 @@ function CommentListItem(props) {
 
 CommentListItem.propTypes = {
   comment: PropTypes.shape({
-    cuid: PropTypes.number.isRequired,
+    cuid: PropTypes.string.isRequired,
     author: PropTypes.string.isRequired,
-    text: PropTypes.string.isRequired,
+    body: PropTypes.string.isRequired,
   }).isRequired,
   onDelete: PropTypes.func.isRequired,
+  openEditComment: PropTypes.func.isRequired,
 };
 
 export default CommentListItem;
